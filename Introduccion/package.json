@@ -1,0 +1,26 @@
+{
+    "name": "node-js",
+    "version": "1.0.0",
+    "description": "Pruebas en Node.js",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sebaslade/pruebasNodeJS.git"
+    },
+    "keywords": [
+        "node",
+        "nodejs"
+    ],
+    "author": "Sebastian Laos",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/sebaslade/pruebasNodeJS/issues"
+    },
+    "homepage": "https://github.com/sebaslade/pruebasNodeJS#readme",
+    "dependencies": {
+        "picocolors": "^1.0.0"
+    }
+}
