@@ -7,7 +7,7 @@ function findAvailablePort(desiredPort) {
         server.listen(desiredPort, () => {
             const { port } = server.address()
             server.close(() =>{
-                resolve(0)
+                resolve(port)
             })
         })
         server.on('error',(err) =>{
