@@ -1,9 +1,12 @@
 const express = require('express') // require -> commonJS 
 const crypto = require('node:crypto')
+
+
 const movies = require('./movies.json')
-const z = require('zod')
+const { validateMovie } = require('./schemas/movies')
 
 const app = express()
+app.use(express.json())
 app.disable('x-powered-by') // deshabilitar el header X-Powered-By: Express
 
 // Todos los recursos que sean MOVIES se identifica con /movies 
@@ -26,28 +29,19 @@ app.get('/movies/:id', (req, res) => { // path-to-reqexp
 })
 
 app.post('/movies', (req, res) => {
-    const {
-        title,
-        genre,
-        year,
-        director,
-        duration,
-        rate,
-        poster
-    } = req.body
+    const result = validateMovie(req.body)
 
+    if (!result.success) {
+        //422 Unprocessable Entity
+        return res.status(400).json({ error: JSON.parse(result.error.message) })
+    }
     const newMovie = {
         id: crypto.randomUUID(), // UUID = Universal Unique Identifier
-        title,
-        genre,
-        year,
-        director,
-        duration,
-        rate: rate ?? 0,
-        poster
+        ...result.data
     }
     // Esto no es REST, porque estamos guardando el estado de la aplicación en memoria
     movies.push(newMovie)
+
     res.status(201).json(newMovie) // actualizar la caché del cliente
 })
 
