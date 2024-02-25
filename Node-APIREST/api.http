@@ -1,0 +1,26 @@
+### Recuperar todas las peliculas
+GET http://localhost:1234/movies 
+
+### Recuperar una pelicula por ID
+GET http://localhost:1234/movies/dcdd0fad-a94c-4810-8acc-5f108d3b18c3
+
+### Recuperar una pelicula por un género
+GET http://localhost:1234/movies?genre=drama
+
+### Crear una pelicula con POST
+POST http://localhost:1234/movies
+Content-Type: application/json
+
+{
+    "title": "The Maze Runner",
+    "year": 1999,
+    "director": "Wes Ball",
+    "duration": 113,
+    "poster": "https://img.fruugo.com/product/3/26/32317263_max.jpg",
+    "genre": [
+        "Action",
+        "Adventure",
+        "Sci-Fi"
+    ],
+    "rate": 9.5
+}
