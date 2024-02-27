@@ -3,7 +3,7 @@ const crypto = require('node:crypto')
 
 
 const movies = require('./movies.json')
-const { validateMovie } = require('./schemas/movies')
+const { validateMovie, validatePartialMovie } = require('./schemas/movies')
 
 const app = express()
 app.use(express.json())
@@ -11,6 +11,8 @@ app.disable('x-powered-by') // deshabilitar el header X-Powered-By: Express
 
 // Todos los recursos que sean MOVIES se identifica con /movies 
 app.get('/movies', (req, res) => {
+    //res.header('Access-Control-Allow-Origin', '*')
+
     const { genre } = req.query
     if (genre) {
         const filteredMovies = movies.filter(
@@ -36,13 +38,39 @@ app.post('/movies', (req, res) => {
         return res.status(400).json({ error: JSON.parse(result.error.message) })
     }
     const newMovie = {
-        id: crypto.randomUUID(), // UUID = Universal Unique Identifier
+        id: crypto.randomUUID(), // uuid v4
         ...result.data
     }
-    // Esto no es REST, porque estamos guardando el estado de la aplicación en memoria
+
+    // Esto no sería REST, porque estamos guardando
+    // el estado de la aplicación en memoria
     movies.push(newMovie)
 
-    res.status(201).json(newMovie) // actualizar la caché del cliente
+    res.status(201).json(newMovie)
+})
+
+app.patch('/movies/:id', (req, res) => {
+    const result = validatePartialMovie(req.body)
+    
+    if(!result.success){
+        return res.status(400).json({ error: JSON.parse(result.error.message) })
+    }
+    
+    const { id } = req.params
+    const movieIndex = movies.findIndex(movie => movie.id === id)
+
+    if (movieIndex === -1){ 
+        return res.status(404).json({ message: 'Movie not found' })
+    }
+
+    const updateMovie ={
+        ...movies[movieIndex],
+        ...result.data
+    }
+
+    movies[movieIndex] = updateMovie
+
+    return res.json(updateMovie)
 })
 
 const PORT = process.env.PORT ?? 1234
