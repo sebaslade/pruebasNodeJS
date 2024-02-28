@@ -1,18 +1,39 @@
 const express = require('express') // require -> commonJS 
 const crypto = require('node:crypto')
-
+const cors = require('cors')
 
 const movies = require('./movies.json')
 const { validateMovie, validatePartialMovie } = require('./schemas/movies')
 
 const app = express()
 app.use(express.json())
+app.use(cors({
+    origin: (origin, callback) =>{
+        const ACCEPTED_ORIGINS = [
+            'http://localhost:8080',
+            'http://localhost:1234',
+            'http://movies.com'
+        ]
+        if (ACCEPTED_ORIGINS.includes(origin)) {
+            return callback(null, true)
+        }
+        if(!origin){
+            return callback(null, true)
+        }
+
+        return callback(new Error('Not allowed by CORS'))
+    }
+}))
 app.disable('x-powered-by') // deshabilitar el header X-Powered-By: Express
+
+// métodos normales: GET/HEAD/POST
+// métodos complejos: PUT/PATCH/DELETE
+
+// CORS Pre-Flight
+// OPTIONS
 
 // Todos los recursos que sean MOVIES se identifica con /movies 
 app.get('/movies', (req, res) => {
-    //res.header('Access-Control-Allow-Origin', '*')
-
     const { genre } = req.query
     if (genre) {
         const filteredMovies = movies.filter(
@@ -49,21 +70,34 @@ app.post('/movies', (req, res) => {
     res.status(201).json(newMovie)
 })
 
-app.patch('/movies/:id', (req, res) => {
-    const result = validatePartialMovie(req.body)
-    
-    if(!result.success){
-        return res.status(400).json({ error: JSON.parse(result.error.message) })
-    }
-    
+app.delete('/movies/:id', (req, res) => {
     const { id } = req.params
     const movieIndex = movies.findIndex(movie => movie.id === id)
 
-    if (movieIndex === -1){ 
+    if (movieIndex === -1) {
         return res.status(404).json({ message: 'Movie not found' })
     }
 
-    const updateMovie ={
+    movies.splice(movieIndex, 1)
+
+    return res.json({ message: 'Movie deleted' })
+})
+
+app.patch('/movies/:id', (req, res) => {
+    const result = validatePartialMovie(req.body)
+
+    if (!result.success) {
+        return res.status(400).json({ error: JSON.parse(result.error.message) })
+    }
+
+    const { id } = req.params
+    const movieIndex = movies.findIndex(movie => movie.id === id)
+
+    if (movieIndex === -1) {
+        return res.status(404).json({ message: 'Movie not found' })
+    }
+
+    const updateMovie = {
         ...movies[movieIndex],
         ...result.data
     }
@@ -88,4 +122,29 @@ app.get('/', (req, res) => {
     }
     res.json({ message: 'Hola mundo' })
 })
+SOLUCION AL PROBLEMA DE CORS SIN INSTALAR NADA:
+
+app.get:
+//SOLUCION AL PROBLEMA DE CORS SIN INSTALAR NADA:
+const origin = req.header('origin')
+// El navegador nunca envía el header de origin cuando la petición es del mismo ORIGIN
+// http://localhost:1234 -> http://localhost:1234 
+if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
+    res.header('Access-Control-Allow-Origin', origin)
+}
+app.delete:
+const origin = req.header('origin') 
+if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
+    res.header('Access-Control-Allow-Origin', origin)
+}
+app.options:
+app.options('/movies/:id', (req, res) => {
+    const origin = req.header('origin')
+    if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
+        res.header('Access-Control-Allow-Origin', origin)
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE')
+    }
+    res.send(200)
+})
+
 */
