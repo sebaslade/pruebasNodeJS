@@ -1,0 +1,40 @@
+### Muestra todos los posts
+GET http://localhost:3000/posts
+
+### Muestra todos los commentarios
+GET http://localhost:3000/comments
+
+### Muestra los perfiles
+GET http://localhost:3000/profiles
+
+### POST
+POST http://localhost:3000/profiles
+Content-Type: application/json
+
+{
+    "name": "Ana", 
+    "lastname": "Hernandez", 
+    "edad": 18 
+}
+
+### PUT
+PUT http://localhost:3000/profiles/9282
+Content-Type: application/json
+
+{
+    "id": "9282",
+    "name": "Ana",
+    "lastname": "Hernandez",
+    "edad": 19
+}
+
+### PATCH
+PATCH http://localhost:3000/profiles/6022
+Content-Type: application/json
+
+{
+    "edad": 21
+}
+
+### DELETE
+DELETE http://localhost:3000/profiles/9282
