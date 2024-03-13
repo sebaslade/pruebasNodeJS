@@ -1,16 +1,18 @@
 {
-  "name": "json-server",
+  "name": "n-web-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "json-server --watch db.json",
+    "dev": "node --watch src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "json-server": "1.0.0-alpha.23"
+    "dotenv": "^16.4.5",
+    "env-var": "^7.4.1",
+    "express": "4.18.3"
   }
 }
