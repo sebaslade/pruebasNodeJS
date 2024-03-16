@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 .scss/custom.css
 .scss/custom.css.map
+mongo/
